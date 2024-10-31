@@ -6,11 +6,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthState {
     user: null | object; // Remplacez par l'interface utilisateur appropriée
+    token: null | string;
     isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
     user: null,
+    token: null,
     isAuthenticated: false,
 };
 
@@ -26,8 +28,11 @@ export const authSlice = createSlice({
             state.user = null;
             state.isAuthenticated = false;
         },
+        setToken(state, action) {
+            state.token = action.payload
+        },
     },
 });
 
-export const { setUser, clearUser } = authSlice.actions;
+export const { setUser, clearUser, setToken } = authSlice.actions;
 export default authSlice.reducer;

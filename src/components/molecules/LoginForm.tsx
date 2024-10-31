@@ -1,8 +1,11 @@
 import React from "react";
 import Button from "../atoms/Button";
 import Input from "../atoms/Input";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectInput } from "../../stores/slices/inputSlice";
+import { useLoginCheckMutation, useCheckAuthQuery } from "../../api/endpoints/auth";
+import { setUser, setToken } from "../../stores/slices/authSlice";
+import { RootState } from '../../stores/store';
 
 interface LoginFormProps {
     
@@ -10,19 +13,46 @@ interface LoginFormProps {
 
 const LoginForm: React.FC<LoginFormProps> = () => {
     const [ isCheck, setIsCheck ] = React.useState(false);
+    const dispatch = useDispatch();
     const inputValue = useSelector(selectInput);
+    const token = useSelector((state: RootState) => state.auth.token);
+    const { data } = useCheckAuthQuery(undefined, {
+        skip: !token
+    });
+    const [ loginCheck ] = useLoginCheckMutation();
 
-    function onLogin() {
-        console.log("login...");
-        console.log("email:", inputValue.email);
-        console.log("password:", inputValue.password);
-        console.log(isCheck);
-    }
+    const onLogin = async () => {
+        try {
+            console.log("Attempting to login...", inputValue);
+
+            const loginRequestBody = {
+                email: inputValue.email,
+                password: inputValue.password,
+            };
+
+            const response = await loginCheck(loginRequestBody).unwrap();
+            const token = response.token;
+            dispatch(setToken(token));
+            dispatch(setUser(data));
+            console.log("Login successful:", response);
+            console.log("your token : ", response);
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
+    };
+
+    React.useEffect(() => {
+        if (data) {
+            dispatch(setUser(data));
+        }
+    }, [data, dispatch]);
 
     const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.checked;
         setIsCheck(newValue);
     };
+
+    if (data) return <h2 className="my-2 text-xl font-bold">Welcome {data.email} !</h2>
 
     return (
         <>

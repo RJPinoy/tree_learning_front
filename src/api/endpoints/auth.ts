@@ -6,18 +6,40 @@
 // Chaque opération peut être définie comme un endpoint dans le slice API.
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../../stores/store';
 
 const baseUrl = 'http://localhost:8000'
 
+interface LoginRequestBody {
+    email: string;
+    password: string;
+}
+
 const api = createApi({
     reducerPath: 'api',
-    baseQuery: fetchBaseQuery({ baseUrl: baseUrl + '/api' }),
+    baseQuery: fetchBaseQuery({ 
+        baseUrl: baseUrl + '/api',
+        prepareHeaders: (headers, { getState }) => {
+            const token = (getState() as RootState).auth.token; // Access token from auth state
+            if (token) {
+                headers.set('Authorization', `Bearer ${token}`);
+            }
+            return headers;
+        },
+    }),
     endpoints: (builder) => ({
+        loginCheck: builder.mutation<any, LoginRequestBody>({
+            query: (body) => ({
+                url: '/login_check',
+                method: 'POST',
+                body,
+            }),
+        }),
         checkAuth: builder.query<any, void>({
-            query: () => '/me', // Endpoint pour vérifier l'utilisateur
+            query: () => '/me',
         }),
     }),
 });
 
-export const { useCheckAuthQuery } = api;
+export const { useLoginCheckMutation, useCheckAuthQuery } = api;
 export default api;
