@@ -8,18 +8,26 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import { AuthWrapper } from './components/wrappers/authWrapper';
+import ModulesTemplate from './components/templates/ModulesTemplate.tsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
   },
+  {
+    path: "/modules",
+    element: <ModulesTemplate />,
+  },
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <AuthWrapper>
+        <RouterProvider router={router} />
+      </AuthWrapper>
     </Provider>
   </StrictMode>,
 )
