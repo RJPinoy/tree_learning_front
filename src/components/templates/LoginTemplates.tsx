@@ -7,13 +7,9 @@ interface LoginTemplatesProps {
 }
 
 const LoginTemplates: React.FC<LoginTemplatesProps> = () => {
-    function onLogin() {
-      console.log("login...");
-    }
-
     return (  
         <div className="flex h-screen bg-gray-100">
-            <LoginSection onLogin={ onLogin } />
+            <LoginSection />
             <CompanySection />
         </div>
     );
