@@ -2,23 +2,30 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import { Provider } from 'react-redux'
+import { Provider, useSelector } from 'react-redux'
 import { store } from './stores/store.ts'
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { AuthWrapper } from './components/wrappers/authWrapper';
+import { AuthWrapper } from './components/wrappers/authWrapper'
 import ModulesTemplate from './components/templates/ModulesTemplate.tsx'
+import ProtectedRoute from './routes/ProtectedRoute.tsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    index: true,
   },
   {
-    path: "/modules",
-    element: <ModulesTemplate />,
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "/modules",
+        element: <ModulesTemplate />
+      }
+    ]
   },
 ]);
 
