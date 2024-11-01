@@ -4,7 +4,7 @@ import Input from "../atoms/Input";
 import { useDispatch, useSelector } from "react-redux";
 import { selectInput } from "../../stores/slices/inputSlice";
 import { useLoginCheckMutation, useCheckAuthQuery } from "../../api/endpoints/auth";
-import { setUser, setToken } from "../../stores/slices/authSlice";
+import { setUser, clearUser, setToken } from "../../stores/slices/authSlice";
 import { RootState } from '../../stores/store';
 
 interface LoginFormProps {
@@ -16,6 +16,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
     const dispatch = useDispatch();
     const inputValue = useSelector(selectInput);
     const token = useSelector((state: RootState) => state.auth.token);
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
     const { data } = useCheckAuthQuery(undefined, {
         skip: !token
     });
@@ -51,8 +52,19 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         const newValue = e.target.checked;
         setIsCheck(newValue);
     };
+  
+    const handleDisconnect = () => {
+        dispatch(clearUser());
+        console.log("Disconnected successfully.");
+    }
 
-    if (data) return <h2 className="my-2 text-xl font-bold">Welcome {data.email} !</h2>
+    if (isAuthenticated) return (
+        <>
+            <h2 className="my-2 text-xl font-bold">Welcome {data.email} !</h2>
+            <button className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-sky-700 transition duration-500 ease-in-out' onClick={ handleDisconnect }>Se déconnecter</button>
+        </>
+
+    )
 
     return (
         <>
