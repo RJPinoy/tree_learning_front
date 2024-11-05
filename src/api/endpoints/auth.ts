@@ -7,8 +7,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../../stores/store';
-
-const baseUrl = 'http://localhost:8000'
+import { baseUrl } from '../../../variables.ts';
 
 interface LoginRequestBody {
     email: string;
@@ -20,10 +19,11 @@ const api = createApi({
     baseQuery: fetchBaseQuery({ 
         baseUrl: baseUrl + '/api',
         prepareHeaders: (headers, { getState }) => {
-            const token = (getState() as RootState).auth.token; // Access token from auth state
+            const token = (getState() as RootState).auth.token;
             if (token) {
                 headers.set('Authorization', `Bearer ${token}`);
             }
+            console.log(headers);
             return headers;
         },
     }),
